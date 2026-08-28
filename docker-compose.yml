@@ -1,0 +1,30 @@
+
+services:
+  # Group 5: Rust Auth Middleware
+  auth-middleware:
+    build: .
+    container_name: rust-auth-middleware
+    expose:
+      - "8082"
+    networks:
+      - ulpin-net
+
+  # Group 5: API Gateway
+  kong:
+    image: kong:latest
+    container_name: kong-gateway
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+    volumes:
+      - ./kong.yml:/kong/declarative/kong.yml
+    ports:
+      - "8000:8000" # Public API proxy port
+    networks:
+      - ulpin-net
+
+networks:
+  ulpin-net:
+    driver: bridge

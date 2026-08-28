@@ -1,0 +1,22 @@
+_format_version: "3.0"
+
+services:
+  - name: rust-auth-middleware
+    url: http://auth-middleware:8082
+    routes:
+      - name: legal-api
+        paths:
+          - /api/v1/legal
+        strip_path: false
+
+# Global plugins applied to all incoming traffic
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Request-ID
+      generator: uuid
+      echo_downstream: true
+  - name: rate-limiting
+    config:
+      minute: 120
+      policy: local
